@@ -23,7 +23,6 @@ class Storage:
         if event["manager_id"] == "":
             self.event_data.update({"password": password}, {'$set': {"manager_id": chat_id}})
             return True
-
         else:
             return False
 

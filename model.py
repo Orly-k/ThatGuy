@@ -28,7 +28,10 @@ class Storage:
 
     def set_user_id(self,event_password ,chat_id):
 
-        self.event_data.update_one({"password": event_password}, {"$push": {"users_id": chat_id}})
+        self.event_data.update_one({"password": event_password}, {"$push": {"users_chat_id": chat_id}})
+
+        event = self.get_event("-226129254_Hodaya's bay")
+        logger.info(f"users: {event['users_chat_id']}")
 
     # def add_item_to_list(self, chat_id, item):
     #     self.event_data.update_one({"chat_id": chat_id}, {"$push": {"items": item}})

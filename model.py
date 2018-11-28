@@ -28,10 +28,16 @@ class Storage:
 
     def set_user_id(self,event_password ,chat_id):
 
-        self.event_data.update_one({"password": event_password}, {"$push": {"users_id": chat_id}})
+        self.event_data.update_one({"password": event_password}, {"$push": {"users_chat_id": chat_id}})
 
-    # def add_item_to_list(self, chat_id, item):
-    #     self.event_data.update_one({"chat_id": chat_id}, {"$push": {"items": item}})
+    def add_item_to_list(self, chat_id, item):
+
+        logger.info(f"> add_items function #{chat_id} {item}")
+
+        self.event_data.update_one({"group_chat_id": chat_id}, {"$push": {"items": item}})
+
+        event = self.get_event("504273079_orly's party")
+        logger.info(f"event[items]:{event['items']} {chat_id} =? {event['group_chat_id']}")
 
     # def get_doc(self, chat_id):
     #     return self.event_data.find_one({"chat_id": chat_id})

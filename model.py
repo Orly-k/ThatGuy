@@ -14,28 +14,30 @@ class Storage:
         self.db = self.client.get_database(db)
         self.event_data = self.db.get_collection("event_data")
 
-    def create_new_list(self, chat_id):
-        self.event_data.replace_one({"chat_id": chat_id}, {
-            "chat_id": chat_id,
-            "items": [],
-        }, upsert=True)
+    def set_manager(self, chat_id, password):
+        #   set manager id
+        self.event_data.update({"password": password}, {'$set': {"manager_id": chat_id}});
+        pass
 
-    def set_manager(self,  chat_id):
-        self.event_data.replace_one({"manager_chat_id": chat_id}, {
-            "manager_chat_id": chat_id,
-            "items": [],
-        }, upsert=True)
+    def set_user_id(self,event_password ,chat_id):
+        self.event_data.update_one({"password": event_password}, {"$push": {"users_id": chat_id}})
 
-    def add_item_to_list(self, chat_id, item):
-        self.event_data.update_one({"chat_id": chat_id}, {"$push": {"items": item}})
+    # def add_item_to_list(self, chat_id, item):
+    #     self.event_data.update_one({"chat_id": chat_id}, {"$push": {"items": item}})
 
-    def get_doc(self, chat_id):
-        return self.event_data.find_one({"chat_id": chat_id})
+    # def get_doc(self, chat_id):
+    #     return self.event_data.find_one({"chat_id": chat_id})
 
     def set_password(self, chat_id, password):
         logger.info(f"> set_password #{chat_id} #{password}")
 
-        self.event_data.replace_one({"chat_id": chat_id}, {
-            "chat_id": chat_id,
+        self.event_data.replace_one({"group_chat_id": chat_id}, {
+            "group_chat_id": chat_id,
+            "manager_id": "",
             "password": password,
+            "items": [],
+            "users_chat_id": [],
+            "expenses": [],
+            "responders": [],
+            "who_paid": []
         }, upsert=True)

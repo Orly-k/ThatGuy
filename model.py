@@ -60,8 +60,30 @@ class Storage:
             return True
         return  False
 
+    def get_items(self, chat_id):
         event = self.get_event_by_chat_group(chat_id)
-        logger.info(f"event[items]:{event['items']} {chat_id} =? {event['group_chat_id']}")
+        return event['items']
+
+    def get_items_by_password(self, password):
+        event = self.get_event_by_password(password)
+        return event['items']
+
+    def get_taken_items(self, password):
+        event = self.get_event_by_password(password)
+        return event['taken_items']
+
+    def get_remaining_items(self, password):
+        remaining_items = [item for item in self.get_items_by_password(password) if item not in self.get_taken_items(password)]
+        return remaining_items
+
+    def set_taken_item(self, password, item):
+
+        if item in self.get_remaining_items(password):
+            self.event_data.update_one({"password": password}, {"$push": {"taken_items": item}})
+            return True
+        return False
+
+
 
     def set_password(self, chat_id, password):
         logger.info(f"> set_password #{chat_id} #{password}")
@@ -71,8 +93,12 @@ class Storage:
             "manager_id": "",
             "password": password,
             "items": [],
+            "taken_items": [],
             "users_chat_id": [],
             "expenses": [],
             "responders": [],
             "who_paid": []
         }, upsert=True)
+
+
+

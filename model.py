@@ -26,12 +26,15 @@ class Storage:
 
     def set_manager(self, chat_id, password):
 
+
         event = self.get_event_by_password(password)
+        logger.info(f"event {event['manager_id']}")
         if event["manager_id"] == "":
+            logger.info("manager_id")
             self.event_data.update({"password": password}, {'$set': {"manager_id": chat_id}})
             return True
-        else:
-            return False
+
+        return False
 
 
     def set_user_id(self,event_password ,chat_id):
@@ -89,8 +92,22 @@ class Storage:
     def set_costs(self, password, cost, chat_id):
 
         self.event_data.update_one({"password": password}, {"$push": {"expenses": [str(chat_id), cost]}})
+        self.event_data.update_one({"password": password}, {"$push": {"responders": [chat_id]}})
 
+    def get_manager_id(self, password, chat_id):
 
+        event = self.get_event_by_password(password)
+        logger.info(f"event[manager_id] {event['manager_id']}")
+        if event["manager_id"] == chat_id:
+            logger.info(f"chat_id {chat_id}")
+            return True
+        return False
+
+    def get_all_clumsys(self,password):
+
+        event = self.get_event_by_password(password)
+        clumsys = [clumsy for clumsy in event["users_chat_id"] if clumsy not in event["responders"]]
+        return clumsys
 
     def set_password(self, chat_id, password):
         logger.info(f"> set_password #{chat_id} #{password}")

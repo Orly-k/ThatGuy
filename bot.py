@@ -14,8 +14,10 @@ import settings
 
 storage = model.Storage(settings.HOST, settings.DB)
 
-bot_manager = {"new_event": 0, "manager": 0, "guest": 0, "open_list": 0, "I_wanna_bring": 0, "bringing": 0, "expenses": 0}
+bot_manager = {"new_event": 0, "manager": 0, "guest": 0, "open_list": 0, "I_wanna_bring": 0,\
+               "bringing": 0, "expenses": 0, "reminder_for_clumsys": 0}
 group_password = {}
+group_manager_password = {}
 
 logging.basicConfig(
     format='[%(levelname)s %(asctime)s %(module)s:%(lineno)d] %(message)s',
@@ -52,10 +54,17 @@ def respond(bot, update):
 
     elif bot_manager["manager"]:
 
-        # check if the manager has been set
         bot_manager["manager"] = 0
-        response = "You are the boss! you can do whatever you want!" if storage.set_manager(chat_id, text) else \
-            "You're rude! are you trying to take over?"
+        logger.info(f"chat_id:{chat_id}, text {text}")
+
+        if storage.set_manager(chat_id, text):
+            storage.set_user_id(text, chat_id)
+            group_manager_password[chat_id] = text
+            response = "You are the boss! you can do whatever you want!"
+
+        else:
+            response = "You're rude! are you trying to take over?"
+
         bot.send_message(chat_id=chat_id,
                          text=response)
 
@@ -102,6 +111,24 @@ def respond(bot, update):
 
     elif bot_manager["expenses"]:
         storage.set_costs(group_password[chat_id], text, chat_id)
+        bot.send_message(chat_id=chat_id, text="we'll pick up tabs later")
+
+    elif bot_manager["reminder_for_clumsys"]:
+
+        bot_manager["reminder_for_clumsys"] = 0
+
+        if storage.get_manager_id(text, chat_id):
+
+            clumsys = storage.get_all_clumsys(text)
+
+            for clumsy in clumsys:
+                bot.send_message(chat_id=clumsy, text="Why aren’t you bringing anything to the party? so rude! ")
+            response = "I told them, they better do something about it"
+
+        else:
+            response = "Who do you think you are?! you're not entitled, too bad for you!"
+
+        bot.send_message(chat_id=chat_id, text=response)
 
 def new_event(bot, update):
 
@@ -154,6 +181,13 @@ def I_wanna_bring(bot, update):
     bot_manager["I_wanna_bring"] = 1
     bot.send_message(chat_id=chat_id,text="Enter password")
 
+def reminder_for_clumsys(bot, update):
+
+    bot_manager["reminder_for_clumsys"] = 1
+    chat_id = update.message.chat_id
+    bot.send_message(chat_id=chat_id, text="Enter password")
+
+
 
 start_handler = CommandHandler('start', start)
 guest_handler = CommandHandler('guest', guest)
@@ -162,6 +196,7 @@ manager_handler = CommandHandler('set_manager', set_manager)
 edit_list_handler = CommandHandler('edit_list', edit_list)
 show_handler = CommandHandler('show_list', show_list)
 bring_handler = CommandHandler('I_wanna_bring', I_wanna_bring)
+clumsys_handler = CommandHandler('reminder_for_clumsys', reminder_for_clumsys)
 
 
 dispatcher.add_handler(start_handler)
@@ -171,6 +206,7 @@ dispatcher.add_handler(manager_handler)
 dispatcher.add_handler(edit_list_handler)
 dispatcher.add_handler(show_handler)
 dispatcher.add_handler(bring_handler)
+dispatcher.add_handler(clumsys_handler)
 
 echo_handler = MessageHandler(Filters.text, respond)
 dispatcher.add_handler(echo_handler)

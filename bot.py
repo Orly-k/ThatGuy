@@ -15,7 +15,7 @@ import settings
 
 storage = model.Storage(settings.HOST, settings.DB)
 
-bot_manager = {"new_event": 0,"manager": 0, "guest": 0}
+bot_manager = {"new_event": 0,"manager": 0, "guest": 0, "open_list": 0}
 
 logging.basicConfig(
     format='[%(levelname)s %(asctime)s %(module)s:%(lineno)d] %(message)s',
@@ -38,6 +38,7 @@ def respond(bot, update):
     text = update.message.text
 
     logger.info(f"= Got on chat #{chat_id}: {text!r}")
+
 
     if bot_manager["new_event"]:
 
@@ -66,7 +67,10 @@ def respond(bot, update):
         bot.send_message(chat_id=chat_id,
                          text=response)
 
+    elif bot_manager["open_list"]:
 
+        if text[0:3] == "add":
+            storage.add_item_to_list(chat_id, text[4:])
     # response = "OK, Your password is set.\n\nEnter your event wish list:"
     # bot.send_message(chat_id=update.message.chat_id, text=response)
 
@@ -107,16 +111,26 @@ def password(chat_id, text):
     return event_password
 
 
+def add_to_list(bot, update):
+    chat_id = update.message.chat_id
+    logger.info(f"add to list = Got on chat #{chat_id}")
+    bot_manager["open_list"] = 1
+
+    bot.send_message(chat_id=chat_id,
+                     text="Start adding items to list\nmake sure all items start with keyword \"add\"")
+
 
 start_handler = CommandHandler('start', start)
 guest_handler = CommandHandler('guest', guest)
 new_event_handler = CommandHandler('new_event', new_event)
 manager_handler = CommandHandler('set_manager', set_manager)
+add_list_handler = CommandHandler('add_to_list', add_to_list)
 
 dispatcher.add_handler(start_handler)
 dispatcher.add_handler(guest_handler)
 dispatcher.add_handler(new_event_handler)
 dispatcher.add_handler(manager_handler)
+dispatcher.add_handler(add_list_handler)
 
 echo_handler = MessageHandler(Filters.text, respond)
 dispatcher.add_handler(echo_handler)

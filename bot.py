@@ -110,6 +110,7 @@ def respond(bot, update):
         bot.send_message(chat_id=chat_id, text=response)
 
     elif bot_manager["expenses"]:
+        bot_manager["expenses"] = 0
         storage.set_costs(group_password[chat_id], text, chat_id)
         bot.send_message(chat_id=chat_id, text="we'll pick up tabs later")
 

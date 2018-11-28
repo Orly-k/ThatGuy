@@ -91,8 +91,10 @@ class Storage:
 
     def set_costs(self, password, cost, chat_id):
 
+        event = self.get_event_by_password(password)
         self.event_data.update_one({"password": password}, {"$push": {"expenses": [str(chat_id), cost]}})
-        self.event_data.update_one({"password": password}, {"$push": {"responders": [chat_id]}})
+        if chat_id not in event["responders"]:
+            self.event_data.update_one({"password": password}, {"$push": {"responders": chat_id}})
 
     def get_manager_id(self, password, chat_id):
 
@@ -106,7 +108,9 @@ class Storage:
     def get_all_clumsys(self,password):
 
         event = self.get_event_by_password(password)
-        clumsys = [clumsy for clumsy in event["users_chat_id"] if clumsy not in event["responders"]]
+        logger.info(f"users_chat_id {event['users_chat_id']}, responders: {event['responders']}")
+        clumsys = [clumsy for clumsy in event["users_chat_id"] if [clumsy] not in event["responders"]]
+        logger.info(f"clumsys {clumsys}")
         return clumsys
 
     def set_password(self, chat_id, password):

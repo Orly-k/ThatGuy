@@ -69,10 +69,23 @@ def respond(bot, update):
 
     elif bot_manager["open_list"]:
 
-        if text[0:3] == "add":
-            storage.add_item_to_list(chat_id, text[4:])
+        keyword_add = "add"
+        keyword_remove = "remove"
 
+        if text[:len(keyword_add)] == keyword_add:
 
+            response = f"{text[len(keyword_add) + 1:]} has been added" if storage.add_item_to_list(chat_id, text[len(keyword_add) + 1:])\
+                else f"{text[len(keyword_add) + 1:]} is already in the list"
+
+            bot.send_message(chat_id=chat_id, text=response)
+
+        elif text[:len(keyword_remove)] == keyword_remove:
+            logger.info(f"keyword_remove {text[:len(keyword_remove)]}")
+
+            response = f"{text[len(keyword_remove)+ 1:]} has been removed" if storage.remove_item_from_list(chat_id, text[len(keyword_remove)+ 1:])\
+                else f"{text[len(keyword_remove) + 1:]} was not found"
+
+            bot.send_message(chat_id=chat_id, text=response)
 
     # response = "OK, Your password is set.\n\nEnter your event wish list:"
     # bot.send_message(chat_id=update.message.chat_id, text=response)
@@ -114,26 +127,25 @@ def password(chat_id, text):
     return event_password
 
 
-def add_to_list(bot, update):
+def edit_list(bot, update):
     chat_id = update.message.chat_id
     logger.info(f"add to list = Got on chat #{chat_id}")
     bot_manager["open_list"] = 1
 
     bot.send_message(chat_id=chat_id,
-                     text="Start adding items to list\nmake sure all items start with keyword \"add\"")
-
+                     text="Start adding/removing items to list\nTo add item use keyword \"add\"\nTo remove item use keyword \"remove\"")
 
 start_handler = CommandHandler('start', start)
 guest_handler = CommandHandler('guest', guest)
 new_event_handler = CommandHandler('new_event', new_event)
 manager_handler = CommandHandler('set_manager', set_manager)
-add_list_handler = CommandHandler('add_to_list', add_to_list)
+edit_list_handler = CommandHandler('edit_list', edit_list)
 
 dispatcher.add_handler(start_handler)
 dispatcher.add_handler(guest_handler)
 dispatcher.add_handler(new_event_handler)
 dispatcher.add_handler(manager_handler)
-dispatcher.add_handler(add_list_handler)
+dispatcher.add_handler(edit_list_handler)
 
 echo_handler = MessageHandler(Filters.text, respond)
 dispatcher.add_handler(echo_handler)

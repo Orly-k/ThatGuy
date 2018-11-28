@@ -45,8 +45,20 @@ class Storage:
 
         event = self.get_event_by_chat_group(chat_id)
 
-        if chat_id not in event["items"]:
+        if item not in event["items"]:
             self.event_data.update_one({"group_chat_id": chat_id}, {"$push": {"items": item}})
+            return True
+        return False
+
+    def remove_item_from_list(self, chat_id, item):
+
+        logger.info(f"remove_item_from_list {item}")
+        event = self.get_event_by_chat_group(chat_id)
+
+        if item in event["items"]:
+            self.event_data.update_one({"group_chat_id": chat_id}, {"$pull": {"items": item}})
+            return True
+        return  False
 
         event = self.get_event_by_chat_group(chat_id)
         logger.info(f"event[items]:{event['items']} {chat_id} =? {event['group_chat_id']}")

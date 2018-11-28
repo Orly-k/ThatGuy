@@ -73,7 +73,10 @@ class Storage:
         return event['taken_items']
 
     def get_remaining_items(self, password):
+        logger.info(f"get_remaining_items: {password}")
         remaining_items = [item for item in self.get_items_by_password(password) if item not in self.get_taken_items(password)]
+        logger.info(f"remaining_items: {remaining_items}")
+
         return remaining_items
 
     def set_taken_item(self, password, item):
@@ -82,6 +85,10 @@ class Storage:
             self.event_data.update_one({"password": password}, {"$push": {"taken_items": item}})
             return True
         return False
+
+    def set_costs(self, password, cost, chat_id):
+
+        self.event_data.update_one({"password": password}, {"$push": {"expenses": [str(chat_id), cost]}})
 
 
 

@@ -51,12 +51,18 @@ def respond(bot, update):
         event_password = text
         storage.set_user_id(event_password, chat_id)
         bot_manager["guest"] = 0
+        bot.send_message(chat_id=chat_id,
+                         text="Bring good things, OK?")
+
 
     elif bot_manager["manager"]:
 
         # check if the manager has been set
         bot_manager["manager"] = 0
         storage.set_manager(chat_id, text)
+        bot.send_message(chat_id=chat_id,
+                         text="You are the boss! you can do whatever you want!")
+
 
     # response = "OK, Your password is set.\n\nEnter your event wish list:"
     # bot.send_message(chat_id=update.message.chat_id, text=response)
@@ -74,7 +80,7 @@ def set_manager(bot, update):
 
     bot_manager["manager"] = 1
     chat_id = update.message.chat_id
-    logger.info(f"> new_event chat #{chat_id}")
+    logger.info(f">set_manager chat #{chat_id}")
 
     bot.send_message(chat_id=chat_id,
                      text="All right than\nWhat is your event password?")
@@ -107,6 +113,7 @@ manager_handler = CommandHandler('set_manager', set_manager)
 dispatcher.add_handler(start_handler)
 dispatcher.add_handler(guest_handler)
 dispatcher.add_handler(new_event_handler)
+dispatcher.add_handler(manager_handler)
 
 echo_handler = MessageHandler(Filters.text, respond)
 dispatcher.add_handler(echo_handler)

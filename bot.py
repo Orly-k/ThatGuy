@@ -71,6 +71,9 @@ def respond(bot, update):
 
         if text[0:3] == "add":
             storage.add_item_to_list(chat_id, text[4:])
+
+
+
     # response = "OK, Your password is set.\n\nEnter your event wish list:"
     # bot.send_message(chat_id=update.message.chat_id, text=response)
 

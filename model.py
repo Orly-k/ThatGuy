@@ -60,8 +60,10 @@ class Storage:
             return True
         return  False
 
+    def get_items(self, chat_id):
         event = self.get_event_by_chat_group(chat_id)
-        logger.info(f"event[items]:{event['items']} {chat_id} =? {event['group_chat_id']}")
+        return event['items']
+
 
     def set_password(self, chat_id, password):
         logger.info(f"> set_password #{chat_id} #{password}")

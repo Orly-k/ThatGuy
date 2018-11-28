@@ -106,17 +106,30 @@ def edit_list(bot, update):
     bot.send_message(chat_id=chat_id,
                      text="Start adding/removing items to list\nTo add item use keyword \"add\"\nTo remove item use keyword \"remove\"")
 
+def show_list(bot, update):
+    chat_id = update.message.chat_id
+    logger.info(f"- Show items: chat #{chat_id}")
+    items = storage.get_items(chat_id)
+    response = "Our event list:\n"
+    response += "\n".join(f"{i+1}. {s}" for i, s in enumerate(items))
+    bot.send_message(chat_id=update.message.chat_id, text=response)
+
 
 start_handler = CommandHandler('start', start)
 guest_handler = CommandHandler('guest', guest)
 new_event_handler = CommandHandler('new_event', new_event)
 manager_handler = CommandHandler('set_manager', set_manager)
 edit_list_handler = CommandHandler('edit_list', edit_list)
+show_handler_handler = CommandHandler('show_list', show_list)
+
 dispatcher.add_handler(start_handler)
 dispatcher.add_handler(guest_handler)
 dispatcher.add_handler(new_event_handler)
 dispatcher.add_handler(manager_handler)
 dispatcher.add_handler(edit_list_handler)
+dispatcher.add_handler(show_handler_handler)
+
+
 echo_handler = MessageHandler(Filters.text, respond)
 dispatcher.add_handler(echo_handler)
 logger.info("Start polling")

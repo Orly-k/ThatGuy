@@ -14,11 +14,21 @@ class Storage:
         self.db = self.client.get_database(db)
         self.event_data = self.db.get_collection("event_data")
 
+    def get_event(self,password):
+        return self.event_data.find_one({"password": password})
+
     def set_manager(self, chat_id, password):
 
-        self.event_data.update({"password": password}, {'$set': {"manager_id": chat_id}});
+        event = self.get_event(password)
+        if event["manager_id"] == "":
+            self.event_data.update({"password": password}, {'$set': {"manager_id": chat_id}})
+            return True
+
+        else:
+            return False
 
     def set_user_id(self,event_password ,chat_id):
+
         self.event_data.update_one({"password": event_password}, {"$push": {"users_id": chat_id}})
 
     # def add_item_to_list(self, chat_id, item):

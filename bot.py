@@ -59,9 +59,12 @@ def respond(bot, update):
 
         # check if the manager has been set
         bot_manager["manager"] = 0
-        storage.set_manager(chat_id, text)
+
+        response = "You are the boss! you can do whatever you want!"  if storage.set_manager(chat_id, text) else\
+            "You're rude! are you trying to take over?"
+
         bot.send_message(chat_id=chat_id,
-                         text="You are the boss! you can do whatever you want!")
+                         text=response)
 
 
     # response = "OK, Your password is set.\n\nEnter your event wish list:"

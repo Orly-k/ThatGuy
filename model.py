@@ -151,7 +151,7 @@ class Storage:
     def get_cheaps(self, password):
 
         event = self.get_event_by_password(password)
-        cheaps = [cheap for cheap in event["users_chat_id"] if [cheap] not in event["who_paid"]]
+        cheaps = [cheap for cheap in event["users_chat_id"] if cheap not in event["who_paid"]]
         return cheaps
 
 

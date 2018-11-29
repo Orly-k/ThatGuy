@@ -16,7 +16,8 @@ storage = model.Storage(settings.HOST, settings.DB)
 
 bot_manager = {"new_event": 0, "manager": 0, "guest": 0, "open_list": 0, "closed_list": 0, "I_wanna_bring": 0,\
                "bringing": 0, "expenses": 0, "reminder_for_clumsys": 0, "close_list": 0, "set_balance": 0, "is_balance": 0,\
-               "get_balance": 0, "pay": 0}
+               "get_balance": 0, "pay": 0, "reminder_for_cheaps": 0}
+
 group_password = {}
 group_manager_password = {}
 
@@ -134,8 +135,6 @@ def respond(bot, update):
 
         bot.send_message(chat_id=chat_id, text=response)
 
-
-
     elif bot_manager["close_list"]:
 
         bot_manager["close_list"] = 0
@@ -162,12 +161,32 @@ def respond(bot, update):
         bot.send_message(chat_id=chat_id, text=response)
 
     elif bot_manager["get_balance"]:
+
+        bot_manager["get_balance"] = 0
         response = storage.get_balance(text, chat_id)
         bot.send_message(chat_id=chat_id, text=response)
 
     elif bot_manager["pay"]:
+
+        bot_manager["pay"] = 0
         storage.set_who_paid(text, chat_id)
         bot.send_message(chat_id=chat_id, text="thanks")
+
+    elif bot_manager["reminder_for_cheaps"]:
+
+        bot_manager["reminder_for_cheaps"] = 0
+        if storage.get_manager_id(text, chat_id):
+
+            cheaps = storage.get_cheaps(text)
+            for cheap in cheaps:
+                bot.send_message(chat_id=cheap, text="Why aren’t you pay for the party? so rude! ")
+            response = "I told them, they better do something about it"
+
+        else:
+            response = "Who do you think you are?! you're not entitled, too bad for you!"
+
+        bot.send_message(chat_id=chat_id, text=response)
+
 
 def new_event(bot, update):
 
@@ -269,8 +288,11 @@ def pay_now(bot, update):
     bot_manager["pay"] = 1
     bot.send_message(chat_id=chat_id, text="enter password")
 
-def reminder_for_cheaps(args):
-    pass
+def reminder_for_cheaps(bot, update):
+
+    bot_manager["reminder_for_cheaps"] = 1
+    chat_id = update.message.chat_id
+    bot.send_message(chat_id=chat_id, text="Enter password")
 
 
 

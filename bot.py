@@ -422,7 +422,7 @@ def reminder_for_cheaps(bot, update):
 
 def help(bot, update):
     chat_id = update.message.chat_id
-    help_text = "*I can help you create and manage your events!*\n\n\
+    help_text = "**I can help you create and manage your events!**\n\n\
 All commands are sent either on the group chat or on a private bot - member chat, I will indicate to where the command belongs.\n\n\
 *You can control me by sending these commands:*\n\n\
 /new_event - create a new event\n\

@@ -125,17 +125,16 @@ class Storage:
             sum += int(member[1])
             logger.info(f"member sum {sum}")
 
-        avg = sum/len(event["responders"])
-        sum = 0
-        for member in event["responders"]:
-            logger.info(f"event[\"responders\"] {event['responders']}")
+        avg = sum/len(event["users_chat_id"])
+
+        for member in event["users_chat_id"]:
+            sum = 0
             for member_ex in event["expenses"]:
-                logger.info(f"member_ex[0]: {type(member_ex[0])}{type(member)}")
                 if member == int(member_ex[0]):
                     sum += int(member_ex[1])
                     logger.info(f"sum: {sum}")
 
-            logger.info(f"sum: {sum} {avg}")
+            logger.info(f"sum: {sum} +-{avg}")
             self.event_data.update_one({"password": password}, {"$push": {"balance": [member, sum - avg]}})
 
 

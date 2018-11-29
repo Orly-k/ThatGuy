@@ -113,9 +113,6 @@ class Storage:
         logger.info(f"clumsys {clumsys}")
         return clumsys
 
-    def get_all_stingy(self,password):
-        pass
-
     def set_balance(self,password):
 
         event = self.get_event_by_password(password)
@@ -146,6 +143,16 @@ class Storage:
                 logger.info(member)
                 return member[1]
 
+    def set_who_paid(self, password, chat_id):
+
+        event = self.get_event_by_password(password)
+        self.event_data.update_one({"password": password}, {"$push": {"who_paid": chat_id}})
+
+    def get_cheaps(self, password):
+
+        event = self.get_event_by_password(password)
+        cheaps = [cheap for cheap in event["users_chat_id"] if [cheap] not in event["who_paid"]]
+        return cheaps
 
 
     def set_password(self, chat_id, password):

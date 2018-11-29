@@ -16,7 +16,7 @@ storage = model.Storage(settings.HOST, settings.DB)
 
 bot_manager = {"new_event": 0, "manager": 0, "guest": 0, "open_list": 0, "closed_list": 0, "I_wanna_bring": 0,\
                "bringing": 0, "expenses": 0, "reminder_for_clumsys": 0, "close_list": 0, "set_balance": 0, "is_balance": 0,\
-               "get_balance": 0}
+               "get_balance": 0, "pay": 0}
 group_password = {}
 group_manager_password = {}
 
@@ -165,8 +165,9 @@ def respond(bot, update):
         response = storage.get_balance(text, chat_id)
         bot.send_message(chat_id=chat_id, text=response)
 
-
-
+    elif bot_manager["pay"]:
+        storage.set_who_paid(text, chat_id)
+        bot.send_message(chat_id=chat_id, text="thanks")
 
 def new_event(bot, update):
 
@@ -262,6 +263,16 @@ def get_balance(bot, update):
 
     bot.send_message(chat_id=chat_id, text=response)
 
+def pay_now(bot, update):
+
+    chat_id = update.message.chat_id
+    bot_manager["pay"] = 1
+    bot.send_message(chat_id=chat_id, text="enter password")
+
+def reminder_for_cheaps(args):
+    pass
+
+
 
 start_handler = CommandHandler('start', start)
 guest_handler = CommandHandler('guest', guest)
@@ -274,6 +285,12 @@ clumsys_handler = CommandHandler('reminder_for_clumsys', reminder_for_clumsys)
 close_list_handler = CommandHandler('close_list', close_list)
 set_balance_handler = CommandHandler('set_balance', set_balance)
 get_balance_handler = CommandHandler('get_balance', get_balance)
+pay_now_handler = CommandHandler('pay_now', pay_now)
+reminder_for_cheaps_handler = CommandHandler('reminder_for_cheaps', reminder_for_cheaps)
+
+
+
+
 
 
 
@@ -288,6 +305,8 @@ dispatcher.add_handler(clumsys_handler)
 dispatcher.add_handler(close_list_handler)
 dispatcher.add_handler(set_balance_handler)
 dispatcher.add_handler(get_balance_handler)
+dispatcher.add_handler(pay_now_handler)
+dispatcher.add_handler(reminder_for_cheaps_handler)
 
 echo_handler = MessageHandler(Filters.text, respond)
 dispatcher.add_handler(echo_handler)

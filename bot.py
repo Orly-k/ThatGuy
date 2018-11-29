@@ -15,7 +15,7 @@ import settings
 storage = model.Storage(settings.HOST, settings.DB)
 
 bot_manager = {"new_event": 0, "manager": 0, "guest": 0, "open_list": 0, "closed_list": 0, "I_wanna_bring": 0,\
-               "bringing": 0, "expenses": 0, "reminder_for_clumsys": 0, "close_list": 0}
+               "bringing": 0, "expenses": 0, "reminder_for_clumsys": 0, "close_list": 0, "set_balance": 0}
 group_password = {}
 group_manager_password = {}
 
@@ -79,8 +79,6 @@ def respond(bot, update):
 
                 response = f"{text[len(keyword_add) + 1:]} has been added" if storage.add_item_to_list(chat_id, text[len(keyword_add) + 1:]) \
                     else f"{text[len(keyword_add) + 1:]} is already in the list"
-
-
 
             elif text[:len(keyword_remove)] == keyword_remove:
 
@@ -146,6 +144,17 @@ def respond(bot, update):
 
         else:
             response = "Who do you think you are?! you're not entitled to close the list!"
+
+        bot.send_message(chat_id=chat_id, text=response)
+
+    elif bot_manager["set_balance"]:
+
+        if storage.get_manager_id(text, chat_id):
+            storage.set_balance(text)
+            response = "OK than, balanced is set"
+
+        else:
+            response = "Who do you think you are?! you're not entitled, too bad for you!"
 
         bot.send_message(chat_id=chat_id, text=response)
 
@@ -218,7 +227,18 @@ def close_list(bot, update):
     chat_id = update.message.chat_id
     bot.send_message(chat_id=chat_id, text="Enter password")
 
+def set_balance(bot, update):
 
+    chat_id = update.message.chat_id
+
+    if  bot_manager["closed_list"] == 1:
+        bot_manager["set_balance"] = 1
+        response = "enter password"
+
+    else:
+        response = "What are you trying to do? give people a chance to participate, you weirdo"
+
+    bot.send_message(chat_id=chat_id, text=response)
 
 start_handler = CommandHandler('start', start)
 guest_handler = CommandHandler('guest', guest)
@@ -229,6 +249,7 @@ show_handler = CommandHandler('show_list', show_list)
 bring_handler = CommandHandler('I_wanna_bring', I_wanna_bring)
 clumsys_handler = CommandHandler('reminder_for_clumsys', reminder_for_clumsys)
 close_list_handler = CommandHandler('close_list', close_list)
+set_balance_handler = CommandHandler('set_balance', set_balance)
 
 
 
@@ -241,6 +262,7 @@ dispatcher.add_handler(show_handler)
 dispatcher.add_handler(bring_handler)
 dispatcher.add_handler(clumsys_handler)
 dispatcher.add_handler(close_list_handler)
+dispatcher.add_handler(set_balance_handler)
 
 echo_handler = MessageHandler(Filters.text, respond)
 dispatcher.add_handler(echo_handler)

@@ -116,6 +116,20 @@ class Storage:
     def get_all_stingy(self,password):
         pass
 
+    def set_balance(self,password):
+
+        event = self.get_event_by_password(password)
+        sum = 0
+
+        for i, member in enumerate(event["expenses"]):
+            sum += int(event["expenses"][i][1])
+
+        avg = sum/len(event["expenses"])
+
+        for i, member in enumerate(event["expenses"]):
+            self.event_data.update_one({"password": password}, {"$push": {"balance": [member, avg - int(event["expenses"][i][1])]}})
+
+
     def set_password(self, chat_id, password):
         logger.info(f"> set_password #{chat_id} #{password}")
 
@@ -127,6 +141,7 @@ class Storage:
             "taken_items": [],
             "users_chat_id": [],
             "expenses": [],
+            "balance": [],
             "responders": [],
             "who_paid": []
         }, upsert=True)

@@ -113,6 +113,9 @@ class Storage:
         logger.info(f"clumsys {clumsys}")
         return clumsys
 
+    def get_all_stingy(self,password):
+        pass
+
     def set_password(self, chat_id, password):
         logger.info(f"> set_password #{chat_id} #{password}")
 

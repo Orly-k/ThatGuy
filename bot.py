@@ -1,6 +1,4 @@
-from random import randint
 from time import sleep
-from telegram import ReplyKeyboardMarkup
 from telegram.ext import CommandHandler
 from telegram.ext import MessageHandler, Filters
 from telegram.ext import Updater
@@ -77,7 +75,10 @@ def respond(bot, update):
         typing(bot, update)
         event_pass = password(chat_id, text)
         bot.send_message(chat_id=chat_id,
-                         text=f"The password for the party is: {event_pass}")
+                         text=f"The password for the party is: {event_pass}\nhave fun")
+        send_gif(bot, "https://tenor.com/view/stewie-family-guy-dance-dancing-gif-11012915", chat_id)
+
+
         bot_manager["new_event"] = 0
 
     elif bot_manager["guest"]:
@@ -86,8 +87,8 @@ def respond(bot, update):
         event_password = text
         storage.set_user_id(event_password, chat_id)
         bot_manager["guest"] = 0
-        bot.send_message(chat_id=chat_id,
-                         text="Bring good things, OK?")
+        bot.send_message(chat_id=chat_id, text="Bring good things, OK?")
+        send_gif(bot, "https://tenor.com/view/stewie-whyyou-murdereyes-gif-5757385", chat_id)
 
     elif bot_manager["manager"]:
 
@@ -153,8 +154,14 @@ def respond(bot, update):
         typing(bot, update)
         bot_manager["expenses"] = 1
         bot_manager["bringing"] = 0
-        response = "So far so good, How much money are you spending?" if storage.set_taken_item(group_password[chat_id], text)\
-            else "Are you bringing weird things?"
+
+        if storage.set_taken_item(group_password[chat_id], text):
+
+            response = "So far so good, How much money are you spending?"
+
+        else:
+            send_gif(bot, "https://tenor.com/view/family-guy-stewie-brian-glass-smash-gif-3510450", chat_id)
+            response = "Are you bringing weird things?"
 
         bot.send_message(chat_id=chat_id, text=response)
 
@@ -165,6 +172,8 @@ def respond(bot, update):
         bot_manager["expenses"] = 0
         storage.set_costs(group_password[chat_id], text, chat_id)
         bot.send_message(chat_id=chat_id, text="we'll pick up tabs later")
+        send_gif(bot, "https://tenor.com/view/family-guy-stewie-griffin-stewie-cold-winter-gif-4497070", chat_id)
+
 
     elif bot_manager["reminder_for_clumsys"]:
 
@@ -184,6 +193,7 @@ def respond(bot, update):
             send_gif(bot, "https://tenor.com/view/stewie-griffin-family-guy-stewie-family-guy-drunk-laughing-gif-12774171", chat_id)
 
         else:
+            send_gif(bot, "https://tenor.com/view/family-guy-stewie-griffin-brian-griffin-punch-gif-5153872", chat_id)
             response = "Who do you think you are?! you're not entitled, too bad for you!"
 
         bot.send_message(chat_id=chat_id, text=response)
@@ -197,9 +207,11 @@ def respond(bot, update):
         if storage.get_manager_id(text, chat_id):
             bot_manager["closed_list"] = 1
             response = "The list has been closed, Be happy with what you have"
+            send_gif(bot, "https://tenor.com/view/stewie-griffin-family-guy-stewie-family-guy-drunk-laughing-gif-12774171", chat_id)
 
         else:
             response = "Who do you think you are?! you're not entitled to close the list!"
+            send_gif(bot, "https://tenor.com/view/family-guy-stewie-griffin-brian-griffin-punch-gif-5153872", chat_id)
 
         bot.send_message(chat_id=chat_id, text=response)
 
@@ -211,9 +223,12 @@ def respond(bot, update):
         if storage.get_manager_id(text, chat_id):
             storage.set_balance(text)
             response = "OK than, balanced is set"
+            send_gif(bot, "https://tenor.com/view/family-guy-stewie-gif-3521494", chat_id)
+
 
         else:
             response = "Who do you think you are?! you're not entitled, too bad for you!"
+            send_gif(bot, "https://tenor.com/view/family-guy-stewie-griffin-brian-griffin-punch-gif-5153872", chat_id)
 
         bot.send_message(chat_id=chat_id, text=response)
 
@@ -232,6 +247,7 @@ def respond(bot, update):
         bot_manager["pay"] = 0
         storage.set_who_paid(text, chat_id)
         bot.send_message(chat_id=chat_id, text="Wow! so responsible! are you an adult?")
+        send_gif(bot, "https://tenor.com/view/stewie-what-gif-7885267", chat_id)
 
     elif bot_manager["reminder_for_cheaps"]:
 
@@ -265,8 +281,7 @@ def new_event(bot, update):
     logger.info(f"> new_event chat #{chat_id}")
     bot.send_message(chat_id=chat_id,
                      text="All right than\nChoose your event name to avoid unwelcomed friends")
-    send_gif(bot,
-             "https://tenor.com/view/family-guy-stewie-childhood-gif-3529800", chat_id)
+    send_gif(bot, "https://tenor.com/view/family-guy-stewie-childhood-gif-3529800", chat_id)
 
 
 def set_manager(bot, update):
@@ -276,8 +291,8 @@ def set_manager(bot, update):
     bot_manager["manager"] = 1
     chat_id = update.message.chat_id
     logger.info(f">set_manager chat #{chat_id}")
-    bot.send_message(chat_id=chat_id,
-                     text="All right than\nWhat is your event password?")
+    bot.send_message(chat_id=chat_id, text="All right than\nWhat is your event password?")
+
 def guest(bot, update):
 
     typing(bot, update)
@@ -285,8 +300,8 @@ def guest(bot, update):
     bot_manager["guest"] = 1
     chat_id = update.message.chat_id
     logger.info(f"> guest chat #{chat_id}")
-    bot.send_message(chat_id=chat_id,
-                     text="What is your event password?")
+    bot.send_message(chat_id=chat_id, text="What is your event password?")
+
 def password(chat_id, text):
 
     logger.info(f"password function = Got on chat #{chat_id}: {text!r}")

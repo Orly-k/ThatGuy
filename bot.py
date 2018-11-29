@@ -420,6 +420,29 @@ def reminder_for_cheaps(bot, update):
     send_gif(bot, "https://tenor.com/view/breakdance-groovy-jamming-stewie-family-guy-gif-8705114", chat_id)
     bot.send_message(chat_id=chat_id, text="give me your access number and i'll handle it for you!")
 
+def help(bot, update):
+    chat_id = update.message.chat_id
+    help_text = "*I can help you create and manage your events!*\n\n\
+All commands are sent either on the group chat or on a private bot - member chat, I will indicate to where the command belongs.\n\n\
+*You can control me by sending these commands:*\n\n\
+/new_event - create a new event\n\
+/guest - join an event your were invaited to\n\n\
+on your private bot chat:\n\
+/set_manager - set who is the manager of the event *ThatGuy commands*  group chat command:\n\
+/show_list - shows the list of every thing there will be at the event. private bot - member channel:\n\
+/I_wanna_bring - register what I will bring to the event and its cost from a list of remaining things to bring.\n\n\
+The following 2 commands can only be done after balance was set.\n\
+/get_balance - see how much money I owe/I need to get back.\n\
+/pay_now - pay my debt.\n\
+*Manager commands*\nIf you are the manager of the event you can use these commands aswell!\n\
+ All manager commands are sent from the private bot - manager channel.\n\
+/close_list - close the list of what is needed for the event.\n\
+/set_balance - once the list is closed you can calculate the ballance of all the members.\n\
+/reminder_for_clumsys - send a remainder at a certain time to all event participents who didnt register what they are bringing to the event.\n\
+/reminder_for_cheaps - send a remainder at a certain time to all event participents who didnt take care of the payment."
+
+    bot.send_message(chat_id=chat_id, text=help_text)
+
 start_handler = CommandHandler('start', start)
 guest_handler = CommandHandler('guest', guest)
 new_event_handler = CommandHandler('new_event', new_event)
@@ -433,6 +456,7 @@ set_balance_handler = CommandHandler('set_balance', set_balance)
 get_balance_handler = CommandHandler('get_balance', get_balance)
 pay_now_handler = CommandHandler('pay_now', pay_now)
 reminder_for_cheaps_handler = CommandHandler('reminder_for_cheaps', reminder_for_cheaps)
+help_handler = CommandHandler('help', help)
 
 dispatcher.add_handler(start_handler)
 dispatcher.add_handler(guest_handler)
@@ -447,6 +471,7 @@ dispatcher.add_handler(set_balance_handler)
 dispatcher.add_handler(get_balance_handler)
 dispatcher.add_handler(pay_now_handler)
 dispatcher.add_handler(reminder_for_cheaps_handler)
+dispatcher.add_handler(help_handler)
 
 echo_handler = MessageHandler(Filters.text, respond)
 dispatcher.add_handler(echo_handler)

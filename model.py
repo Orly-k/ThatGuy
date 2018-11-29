@@ -120,14 +120,33 @@ class Storage:
 
         event = self.get_event_by_password(password)
         sum = 0
-
+        logger.info(event["expenses"])
         for i, member in enumerate(event["expenses"]):
-            sum += int(event["expenses"][i][1])
+            sum += int(member[1])
+            logger.info(f"member sum {sum}")
 
-        avg = sum/len(event["expenses"])
+        avg = sum/len(event["responders"])
+        sum = 0
+        for member in event["responders"]:
+            logger.info(f"event[\"responders\"] {event['responders']}")
+            for member_ex in event["expenses"]:
+                logger.info(f"member_ex[0]: {type(member_ex[0])}{type(member)}")
+                if member == int(member_ex[0]):
+                    sum += int(member_ex[1])
+                    logger.info(f"sum: {sum}")
 
-        for i, member in enumerate(event["expenses"]):
-            self.event_data.update_one({"password": password}, {"$push": {"balance": [member, avg - int(event["expenses"][i][1])]}})
+            logger.info(f"sum: {sum} {avg}")
+            self.event_data.update_one({"password": password}, {"$push": {"balance": [member, sum - avg]}})
+
+
+    def get_balance(self, password, chat_id):
+        event = self.get_event_by_password(password)
+        for member in event["balance"]:
+            logger.info(member)
+            if member[0] == chat_id:
+                logger.info(member)
+                return member[1]
+
 
 
     def set_password(self, chat_id, password):

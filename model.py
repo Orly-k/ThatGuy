@@ -109,7 +109,7 @@ class Storage:
 
         event = self.get_event_by_password(password)
         logger.info(f"users_chat_id {event['users_chat_id']}, responders: {event['responders']}")
-        clumsys = [clumsy for clumsy in event["users_chat_id"] if [clumsy] not in event["responders"]]
+        clumsys = [clumsy for clumsy in event["users_chat_id"] if clumsy not in event["responders"]]
         logger.info(f"clumsys {clumsys}")
         return clumsys
 

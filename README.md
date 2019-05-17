@@ -6,10 +6,6 @@
 
 {ThatGuy takes care of who is coming, what needs to be brough to the event, and payment to friends}
 
-## Screenshots
-
-![SCREESHOT DECSRIPTION](screenshots/shopping-list-bot-1.png)
-
 ## How to Run This Bot
 You can use /help for full instructions.
 use /new_event in a groupe chat in order to create a new event. Save the password for further accsses to event.
